@@ -8,7 +8,6 @@ ENV APP_JAR=spring-petclinic.jar
 
 COPY ${JAR_FILE} ${APP_JAR}
 
+ENV JAVA_OPTS="-XX:+UnlockExperimentalVMOptions -XX:-UseContainerSupport -Dmicrometer.system.metrics.enabled=false"
 
-
-ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-Dmicrometer.system.metrics.enabled=false", "-jar", "spring-petclinic.jar"]
-
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar spring-petclinic.jar"]

@@ -1,6 +1,6 @@
 ---
 - name: Dockerize Spring pet clinic
-  hosts: 16.170.208.235
+  hosts: 51.21.193.106
   become: yes
   vars:
     repo_url: "https://github.com/spring-projects/spring-petclinic.git"
