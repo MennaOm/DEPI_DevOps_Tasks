@@ -1,0 +1,65 @@
+---
+- name: Dockerize Spring pet clinic
+  hosts: 16.170.208.235
+  become: yes
+  vars:
+    repo_url: "https://github.com/spring-projects/spring-petclinic.git"
+    app_path: "/opt/spring-boot-app"
+    dockerfile_src: "./Dockerfile"
+    image_name: "spring-pet-clinic"
+    container_name: "pet-clinic"
+    app_port: 8080
+    docker_port: 8085
+
+  tasks:
+    # - name: Update apt cache
+    #    ansible.builtin.apt:
+    #     update_cache: yes
+
+    # - name: Install required packages
+    #    ansible.builtin.package:
+    #    name:
+    #      - git
+    #      - openjdk-17-jdk
+    #      - maven
+    #      - python3
+    #      - python3-pip
+    #    state: present
+
+    #  - name: Install Python Docker SDK via apt
+    #    ansible.builtin.package:
+    #     name: python3-docker
+    #   state: present
+
+    - name: Clone the GitHub repository
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_path }}"
+        version: main
+        force: yes
+
+    - name: Build the Spring pet clinic with Maven
+      ansible.builtin.command:
+        cmd: mvn clean package -DskipTests
+        chdir: "{{ app_path }}"
+
+    - name: Copy Dockerfile from playbook directory to app directory
+      ansible.builtin.copy:
+        src: "{{ dockerfile_src }}"
+        dest: "{{ app_path }}/Dockerfile"
+
+    - name: Build Docker image for the app
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        build:
+          path: "{{ app_path }}"
+        source: build
+
+    - name: Run the Docker container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image_name }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "{{ docker_port }}:{{ app_port }}"

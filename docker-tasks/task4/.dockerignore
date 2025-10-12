@@ -1,0 +1,6 @@
+.devcontainer
+.github
+gradle
+k8s
+target
+src/test
