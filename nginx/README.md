@@ -1,4 +1,4 @@
-# 1. Install nginx on Ubunto
+# 1. Install nginx on Ubuntu
 ```bash
 sudo apt update
 sudo apt install nginx -y 
